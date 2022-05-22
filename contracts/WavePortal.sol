@@ -24,4 +24,9 @@ contract WavePortal {
         console.log("We have %d total waves!", totalWaves);
         return totalWaves;
     }
+
+    function getAddressLength() public view returns (uint256) {
+        console.log("Length of addressArray: %d", addressArray.length);
+        return addressArray.length;
+    }
 }
