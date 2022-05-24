@@ -1,38 +1,35 @@
 const main = async () => {
-    const [owner, randomPerson] = await hre.ethers.getSigners();
-    const fistBumpFactory = await hre.ethers.getContractFactory("fistBumpPortal");
-    const fistBump = await fistBumpFactory.deploy();
-    await fistBump.deployed();
+    const fistbump_ContractFactory = await hre.ethers.getContractFactory("fistBumpPortal");
+    const fistbump_contract = await fistbump_ContractFactory.deploy();
+    await fistbump_contract.deployed();
+    console.log("Contract address:", fistbump_contract.address);
   
-    console.log("Contract deployed to:", fistBump.address);
-    console.log("Contract deployed by:", owner.address);
+    let total_fistbumps;
+    total_fistbumps = await fistbump_contract.get_total_fistbumps();
+    console.log(total_fistbumps.toNumber());
   
-    let waveCount;
-    fistBumpCount = await fistBump.getTotalFistBumps();
-    numOfAddresses = await fistBump.getAddressLength();
+    /**
+     * Let's send a few fistbumps!
+     */
+    let fistbump_tx = await fistbump_contract.fistbump("A message!");
+    await fistbump_tx.wait(); // Wait for the transaction to be mined
   
-    let fistBumpTxn = await fistBump.fistBump();
-    await fistBumpTxn.wait();
+    const [_, randomPerson] = await hre.ethers.getSigners();
+    fistbump_tx = await fistbump_contract.connect(randomPerson).fistbump("Another message!");
+    await fistbump_tx.wait(); // Wait for the transaction to be mined
   
-    fistBumpCount = await fistBump.getTotalFistBumps();
-    numOfAddresses = await fistBump.getAddressLength();
-
-    fistBumpTxn = await fistBump.connect(randomPerson).fistBump();
-    await fistBumpTxn.wait();
+    let all_fistbumps = await fistbump_contract.get_all_fistbumps();
+    console.log(all_fistbumps);
+  };
   
-    fistBumpCount = await fistBump.getTotalFistBumps();
-    numOfAddresses = await fistBump.getAddressLength();
-};
+  const runMain = async () => {
+    try {
+      await main();
+      process.exit(0);
+    } catch (error) {
+      console.log(error);
+      process.exit(1);
+    }
+  };
   
-const runMain = async () => {
-try {
-    await main();
-    process.exit(0); // exit Node process without error
-} catch (error) {
-    console.log(error);
-    process.exit(1); // exit Node process while indicating 'Uncaught Fatal Exception' error
-}
-// Read more about Node exit ('process.exit(num)') status codes here: https://stackoverflow.com/a/47163396/7974948
-};
-  
-runMain();
+  runMain();
